@@ -244,7 +244,7 @@ services:
       KIE_SERVER_CONTROLLER: http://business-central:8080/business-central/rest/controller
       KIE_MAVEN_REPO: http://business-central:8080/business-central/maven2
     volumes:
-      - oase-business-central:/opt/jboss/wildfly/bin/.niogit
+      - business-central-data:/opt/jboss/wildfly/bin/.niogit
       - common-m2-repository:/opt/jboss/.m2/repository/com/oase
     networks:
       - private
