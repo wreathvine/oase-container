@@ -5,7 +5,7 @@ services:
     image: exastro/oase-base:${OASE_VERSION:-latest}
     container_name: oase-base
     hostname: oase-base
-    restart: on-failure
+    restart: always
     tty: true
     build:
       context: ./oase-base
@@ -19,7 +19,7 @@ services:
     image: exastro/oase-backyard:${OASE_VERSION:-latest}
     container_name: oase-backyard
     hostname: oase-backyard
-    restart: on-failure
+    restart: always
     tty: true
     build:
       context: ./oase-backyard
@@ -51,7 +51,7 @@ services:
     image: exastro/oase-web:${OASE_VERSION:-latest}
     container_name: oase-web
     hostname: oase-web
-    restart: on-failure
+    restart: always
     tty: true
     build:
       context: ./oase-web
@@ -75,7 +75,7 @@ services:
     image: exastro/oase-apply:${OASE_VERSION:-latest}
     container_name: oase-apply
     hostname: oase-apply
-    restart: on-failure
+    restart: always
     tty: true
     build:
       context: ./oase-apply
@@ -97,7 +97,7 @@ services:
     image: exastro/oase-accept:${OASE_VERSION:-latest}
     container_name: oase-accept
     hostname: oase-accept
-    restart: on-failure
+    restart: always
     tty: true
     build:
       context: ./oase-accept
@@ -116,7 +116,7 @@ services:
     image: exastro/oase-agent:${OASE_VERSION:-latest}
     container_name: oase-agent
     hostname: oase-agent
-    restart: on-failure:3
+    restart: always
     tty: true
     build:
       context: ./oase-agent
@@ -132,7 +132,7 @@ services:
     image: exastro/oase-action:${OASE_VERSION:-latest}
     container_name: oase-action
     hostname: oase-action
-    restart: on-failure:3
+    restart: always
     tty: true
     build:
       context: ./oase-action
@@ -148,7 +148,7 @@ services:
     image: exastro/oase-ita-collaboration:${OASE_VERSION:-latest}
     container_name: oase-ita-collaboration
     hostname: oase-ita-collaboration
-    restart: on-failure:3
+    restart: always
     tty: true
     build:
       context: ./oase-ita-collaboration
@@ -164,7 +164,7 @@ services:
     image: exastro/oase-servicenow-notification:${OASE_VERSION:-latest}
     container_name: oase-servicenow-notification
     hostname: oase-servicenow-notification
-    restart: on-failure:3
+    restart: always
     tty: true
     build:
       context: ./oase-servicenow-notification
@@ -178,9 +178,9 @@ services:
 
   oase-zabbix-monitoring:
     image: exastro/oase-zabbix-monitoring:${OASE_VERSION:-latest}
-    container_name: oase-zabbix-notification
-    hostname: oase-zabbix-notification
-    restart: on-failure:3
+    container_name: oase-zabbix-monitoring
+    hostname: oase-zabbix-monitoring
+    restart: always
     tty: true
     build:
       context: ./oase-zabbix-monitoring
@@ -196,7 +196,7 @@ services:
     image: rabbitmq:3.9.8-management
     container_name: rabbitmq
     hostname: rabbitmq
-    restart: on-failure
+    restart: always
     tty: true
     environment:
       RABBITMQ_DEFAULT_USER: ${MQ_USER:-admin}
@@ -212,7 +212,7 @@ services:
     image: mariadb:10.6.4
     container_name: mariadb
     hostname: mariadb
-    restart: on-failure
+    restart: always
     tty: true
     ports:
       - "${DB_PORT:-43306}:3306"
@@ -230,7 +230,7 @@ services:
     image: exastro/it-automation:1.9.0-ja
     container_name: it-automation
     hostname: it-automation
-    restart: on-failure
+    restart: always
     tty: true
     privileged: true
     ports:
@@ -242,7 +242,7 @@ services:
     image: exastro/business-central:${OASE_VERSION:-latest}
     container_name: business-central
     hostname: business-central
-    restart: on-failure
+    restart: always
     tty: true
     build:
       context: ./business-central
@@ -265,7 +265,7 @@ services:
     image: exastro/kie-server:${OASE_VERSION:-latest}
     container_name: kie-server
     hostname: kie-server
-    restart: on-failure
+    restart: always
     tty: true
     build:
       context: ./kie-server
