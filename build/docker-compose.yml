@@ -247,17 +247,12 @@ services:
     build:
       context: ./business-central
       dockerfile: ./Dockerfile
-    ports:
-      - "${BUSINESS_CENTRAL_PORT:-48080}:8080"
     environment:
-      DROOLS_USER_NAME: ${JBOSS_USER:-admin}
-      DROOLS_USER_PASSWORD: ${JBOSS_PASSWORD:-admin}
-      DROOLS_USER_ROLE: ${JBOSS_USER_ROLE:-"admin,kie-server,rest-all"}
       KIE_SERVER_LOCATION: http://kie-server:8080/kie-server/services/rest/server
-      KIE_SERVER_CONTROLLER: http://business-central:8080/business-central/rest/controller
-      KIE_MAVEN_REPO: http://business-central:8080/business-central/maven2
     volumes:
       - common-m2-repository:/opt/jboss/.m2/repository/com/oase
+    ports:
+      - "${BUSINESS_CENTRAL_PORT:-48080}:8080"
     networks:
       - private
 
@@ -270,23 +265,18 @@ services:
     build:
       context: ./kie-server
       dockerfile: ./Dockerfile
-    ports:
-      - "${KIE_SERVER_PORT:-48180}:8080"
-    volumes:
-      - common-m2-repository:/opt/jboss/.m2/repository/com/oase
     environment:
-      DROOLS_USER_NAME: ${JBOSS_USER:-admin}
-      DROOLS_USER_PASSWORD: ${JBOSS_PASSWORD:-admin}
-      DROOLS_USER_ROLE: ${JBOSS_USER_ROLE:-"admin,kie-server,rest-all"}
       KIE_SERVER_LOCATION: http://kie-server:8080/kie-server/services/rest/server
       KIE_SERVER_CONTROLLER: http://business-central:8080/business-central/rest/controller
       KIE_MAVEN_REPO: http://business-central:8080/business-central/maven2
     volumes:
       - common-m2-repository:/opt/jboss/.m2/repository/com/oase
-    depends_on:
-      - business-central
+    ports:
+      - "${KIE_SERVER_PORT:-48180}:8080"
     networks:
       - private
+    depends_on:
+      - business-central
 
 volumes:
   common-m2-repository:
