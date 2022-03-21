@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: oase
+  name: oase-accept
+  labels:
+    name: oase-accept
+spec:
+  strategy:
+    type: Recreate
+  replicas: 3
+  selector:
+    matchLabels:
+      name: oase-accept
+  template:
+    metadata:
+      labels:
+        name: oase-accept
+    spec:
+      hostname: oase-accept
+      containers:
+        - name: oase-accept
+          image: exastro/oase-accept:latest
+          imagePullPolicy: IfNotPresent
+          resources: {}
+          env:
+            - name: DB_HOST
+              value: "mariadb"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: "OASE_DB"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-password
+          volumeMounts:
+            - name: logs
+              mountPath: "/exastro/OASE/oase-root/logs/backyardlogs/oase_accept"
+              subPath: oase_accept
+              readOnly: false
+          securityContext:
+            capabilities: {}
+            privileged: false
+      volumes:
+        - name: logs
+          persistentVolumeClaim:
+            claimName: logs-pvc

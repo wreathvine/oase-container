@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: oase
+  name: oase-apply
+  labels:
+    name: oase-apply
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: service
+      port: 50001
+      targetPort: 50001
+  selector:
+    name: oase-apply

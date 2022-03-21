@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: oase
+  name: business-central-data-pvc
+spec:
+  accessModes:
+  - ReadWriteMany
+  volumeName: business-central-data-pv
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      namespace: oase
+      name: business-central-data-pv
+  volumeMode: Filesystem

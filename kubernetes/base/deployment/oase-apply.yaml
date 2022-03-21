@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: oase
+  name: oase-apply
+  labels:
+    name: oase-apply
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      name: oase-apply
+  template:
+    metadata:
+      labels:
+        name: oase-apply
+    spec:
+      hostname: oase-apply
+      containers:
+        - name: oase-apply
+          image: exastro/oase-apply:latest
+          imagePullPolicy: IfNotPresent
+          resources: {}
+          env:
+            - name: DB_HOST
+              value: "mariadb"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: "OASE_DB"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-password
+          ports:
+            - name: service
+              containerPort: 50001
+          volumeMounts:
+            - name: share
+              mountPath: "/opt/jboss/.m2/repository/com/oase"
+              subPath: m2-repository
+              readOnly: false
+            - name: share
+              mountPath: "/exastro/OASE/oase-root/temp"
+              subPath: temp
+              readOnly: false
+            - name: share
+              mountPath: "/exastro/rule"
+              subPath: rule
+              readOnly: false
+            - name: logs
+              mountPath: "/exastro/OASE/oase-root/logs/backyardlogs/oase_apply"
+              subPath: oase_apply
+              readOnly: false
+          securityContext:
+            capabilities: {}
+            privileged: false
+      volumes:
+        - name: share
+          persistentVolumeClaim:
+            claimName: share-pvc
+        - name: logs
+          persistentVolumeClaim:
+            claimName: logs-pvc

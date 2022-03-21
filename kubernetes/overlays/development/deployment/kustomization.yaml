@@ -1,0 +1,59 @@
+resources:
+  - ../../../base
+patchesJSON6902:
+  - target:
+      version: v1
+      kind: Deployment
+      name: oase-accept
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always
+  - target:
+      version: v1
+      kind: Deployment
+      name: oase-action
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always
+  - target:
+      version: v1
+      kind: Deployment
+      name: oase-agent
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always
+  - target:
+      version: v1
+      kind: Deployment
+      name: oase-apply
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always
+  - target:
+      version: v1
+      kind: Deployment
+      name: oase-ita-collaboration
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always
+  - target:
+      version: v1
+      kind: Deployment
+      name: oase-web
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always
+  - target:
+      version: v1
+      kind: Deployment
+      name: oase-zabbix-monitoring
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always

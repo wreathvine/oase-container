@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: oase
+  name: mariadb-data-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  volumeName: mariadb-data-pv
+  resources:
+    requests:
+      storage: 20Gi
+  selector:
+    matchLabels:
+      namespace: oase
+      name: mariadb-data-pv
+  volumeMode: Filesystem

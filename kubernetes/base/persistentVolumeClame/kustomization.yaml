@@ -1,0 +1,6 @@
+resources:
+  - business-central-data.yaml
+  - logs.yaml
+  - mariadb-data.yaml
+  - rabbitmq-data.yaml
+  - share.yaml

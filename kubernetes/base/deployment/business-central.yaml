@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: oase
+  name: business-central
+  labels:
+    name: business-central
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      name: business-central
+  template:
+    metadata:
+      labels:
+        name: business-central
+    spec:
+      hostname: business-central
+      containers:
+        - name: business-central
+          image: exastro/business-central:latest
+          imagePullPolicy: IfNotPresent
+          resources: {}
+          env:
+            - name: KIE_SERVER_LOCATION
+              value: "http://kie-server:8080/kie-server/services/rest/server"
+            - name: KIE_SERVER_CONTROLLER
+              value: "http://business-central:8080/business-central/rest/controller"
+            - name: KIE_MAVEN_REPO
+              value: "http://business-central:8080/business-central/maven2"
+          ports:
+            - containerPort: 8080
+              name: service
+          volumeMounts:
+            # - name: business-central-data
+            #   mountPath: "/opt/jboss/wildfly/bin/.niogit"
+            #   readOnly: false
+            - name: share
+              mountPath: "/opt/jboss/.m2/repository/com/oase"
+              subPath: m2-repository
+              readOnly: false
+          securityContext:
+            capabilities: {}
+            privileged: false
+      volumes:
+        - name: business-central-data
+          persistentVolumeClaim:
+            claimName: business-central-data-pvc
+        - name: share
+          persistentVolumeClaim:
+            claimName: share-pvc
