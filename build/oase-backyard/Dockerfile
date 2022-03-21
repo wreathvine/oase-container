@@ -19,8 +19,7 @@ ENV LOG_LEVEL=NORMAL
 ENV LOG_DIR=/exastro/OASE/oase-root/logs/backyardlogs/oase_action
 
 # Add OASE user
-RUN groupadd -g 49152 oase \
- && useradd -r -u 49152 -g oase oase
+RUN useradd oase
 
 # Copy OASE artifacts
 COPY --chown=oase:oase --from=resource /exastro /exastro/
@@ -37,5 +36,5 @@ RUN apt-get update && apt-get install -y \
 ENV http_proxy=
 ENV https_proxy=
 
-USER 49152
+USER oase
 ENTRYPOINT ["/docker-entrypoint.sh"]

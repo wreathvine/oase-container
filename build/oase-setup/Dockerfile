@@ -10,5 +10,5 @@ COPY --chown=oase:oase ./files/__init__.py /exastro/OASE/oase-root/web_app/model
 
 RUN chmod a+x /docker-entrypoint.sh
 
-USER 49152
+USER oase
 ENTRYPOINT ["/docker-entrypoint.sh"]

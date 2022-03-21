@@ -49,7 +49,7 @@ WORKDIR /exastro/OASE/oase-root
 ENV http_proxy=
 ENV https_proxy=
 
-USER 49152
+USER oase
 EXPOSE 50001
 
 CMD ["python3", "/exastro/OASE/oase-root/backyards/apply_driver/oase_apply.py"]

@@ -39,12 +39,7 @@ RUN sed -i -e '/^SESSION_ENGINE/s/.*/SESSION_ENGINE = '\''django.contrib.session
 # Install Python packages
 RUN pip install --no-cache-dir -r /exastro/OASE/oase_install_package/install_scripts/list/requirements.txt
 
-RUN groupadd -g 49152 oase \
- && useradd -r -u 49152 -g oase oase
-
 ENV http_proxy=
 ENV https_proxy=
-
-USER 49152
 
 CMD ["sh", "-c", "exit 0"]
