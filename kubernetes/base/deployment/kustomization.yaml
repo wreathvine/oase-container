@@ -1,0 +1,12 @@
+resources:
+  - oase-accept.yaml
+  - oase-action.yaml
+  - oase-agent.yaml
+  - oase-apply.yaml
+  - oase-ita-collaboration.yaml
+  - oase-web.yaml
+  - oase-zabbix-monitoring.yaml
+  - business-central.yaml
+  - kie-server.yaml
+  - mariadb.yaml
+  - rabbitmq.yaml

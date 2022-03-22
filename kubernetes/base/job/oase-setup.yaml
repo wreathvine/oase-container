@@ -1,0 +1,117 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: oase
+  name: oase-setup
+  labels:
+    name: oase-setup
+spec:
+  template:
+    spec:
+      hostname: oase-setup
+      restartPolicy: Never
+      initContainers:
+        - name: mariadb-ping
+          image: mariadb:10.6.4
+          command:
+            [
+              "bash",
+              "-c",
+              "until mysqladmin -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ping; do echo waiting for mysql ping response.; sleep 2; done",
+            ]
+          env:
+            - name: DB_HOST
+              value: "mariadb"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: "OASE_DB"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-password
+        - name: mariadb-service
+          image: mariadb:10.6.4
+          command:
+            [
+              "bash",
+              "-c",
+              "until mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_DATABASE} -e 'SELECT 1'; do echo waiting for mysql service response.; sleep 2; done",
+            ]
+          env:
+            - name: DB_HOST
+              value: "mariadb"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: "OASE_DB"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-password
+      containers:
+        - name: oase-setup
+          image: exastro/oase-setup:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-root-password
+            - name: DB_HOST
+              value: "mariadb"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: "OASE_DB"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-password
+            - name: BUSINESS_CENTRAL_ENDPOINT
+              value: business-central:8080
+            - name: KIE_SERVER_ENDPOINT
+              value: kie-server:8080
+            - name: JBOSS_USER
+              valueFrom:
+                secretKeyRef:
+                  name: jboss-secret
+                  key: jboss-user
+            - name: JBOSS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jboss-secret
+                  key: jboss-user
+            - name: MQ_HOST
+              value: rabbitmq
+            - name: MQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mq-secret
+                  key: mq-user
+            - name: MQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mq-secret
+                  key: mq-password
+            - name: MAIL_SMTP
+              value: "{}"

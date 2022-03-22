@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: oase
+  name: kie-server
+  labels:
+    name: kie-server
+spec:
+  type: NodePort
+  sessionAffinity: ClientIP
+  ports:
+    - name: service
+      port: 8080
+      targetPort: 8080
+  selector:
+    name: kie-server

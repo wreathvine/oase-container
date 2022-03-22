@@ -1,0 +1,7 @@
+resources:
+  - business-central.yaml
+  - kie-server.yaml
+  - mariadb.yaml
+  - oase-apply.yaml
+  - oase-web.yaml
+  - rabbitmq.yaml

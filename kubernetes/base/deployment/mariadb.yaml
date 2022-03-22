@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: oase
+  name: mariadb
+  labels:
+    name: mariadb
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      name: mariadb
+  template:
+    metadata:
+      labels:
+        name: mariadb
+    spec:
+      hostname: mariadb
+      containers:
+        - name: mariadb
+          image: mariadb:10.6.4
+          imagePullPolicy: IfNotPresent
+          resources: {}
+          livenessProbe:
+            exec:
+              command:
+                [
+                  "bash",
+                  "-c",
+                  "mysqladmin -u root -p$MARIADB_ROOT_PASSWORD ping",
+                ]
+            timeoutSeconds: 3
+            failureThreshold: 3
+            periodSeconds: 10
+          startupProbe:
+            exec:
+              command:
+                [
+                  "bash",
+                  "-c",
+                  "mysql -u root -p$MARIADB_ROOT_PASSWORD -e 'SELECT 1'",
+                ]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+          env:
+            - name: TZ
+              value: "Asia/Tokyo"
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-root-password
+            - name: MARIADB_ROOT_HOST
+              value: "%"
+            - name: MARIADB_DATABASE
+              value: "OASE_DB"
+            - name: MARIADB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-user
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-password
+          ports:
+            - containerPort: 3306
+              name: mariadb
+          volumeMounts:
+            - mountPath: "/var/lib/mysql"
+              name: mariadb-data
+              readOnly: false
+          securityContext:
+            capabilities: {}
+            privileged: false
+      volumes:
+        - name: mariadb-data
+          persistentVolumeClaim:
+            claimName: mariadb-data-pvc
