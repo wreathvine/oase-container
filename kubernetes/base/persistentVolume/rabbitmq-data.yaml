@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  namespace: oase
+  name: rabbitmq-data-pv
+  labels:
+    namespace: oase
+    name: rabbitmq-data-pv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 10Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    namespace: oase
+    name: rabbitmq-data-pvc
+  hostPath:
+    path: /tmp/oase/rabbitmq/data
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
