@@ -29,13 +29,15 @@ spec:
               value: "http://business-central:8080/business-central/rest/controller"
             - name: KIE_MAVEN_REPO
               value: "http://business-central:8080/business-central/maven2"
+            - name: JAVA_OPTS
+              value: "-Xms256m -Xmx2048m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=512m -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8"
           ports:
             - containerPort: 8080
               name: service
           volumeMounts:
-            # - name: business-central-data
-            #   mountPath: "/opt/jboss/wildfly/bin/.niogit"
-            #   readOnly: false
+            - name: business-central-data
+              mountPath: "/opt/jboss/wildfly/bin/.niogit"
+              readOnly: false
             - name: share
               mountPath: "/opt/jboss/.m2/repository/com/oase"
               subPath: m2-repository

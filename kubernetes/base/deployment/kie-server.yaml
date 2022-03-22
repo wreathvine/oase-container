@@ -29,6 +29,8 @@ spec:
               value: "http://business-central:8080/business-central/rest/controller"
             - name: KIE_MAVEN_REPO
               value: "http://business-central:8080/business-central/maven2"
+            - name: JAVA_OPTS
+              value: "-Xms256m -Xmx2048m -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8"
           ports:
             - name: service
               containerPort: 8080

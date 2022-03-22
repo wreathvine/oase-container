@@ -45,7 +45,7 @@ spec:
               containerPort: 50001
           volumeMounts:
             - name: share
-              mountPath: "/opt/jboss/.m2/repository/com/oase"
+              mountPath: "/home/oase/.m2/repository/com/oase"
               subPath: m2-repository
               readOnly: false
             - name: share
