@@ -1,0 +1,1120 @@
+#   Copyright 2019 NEC Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: oase
+---
+apiVersion: v1
+data:
+  db-password: T0FTRV9QQVNTV0Q=
+  db-root-password: cGFzc3dvcmQ=
+  db-user: T0FTRV9VU0VS
+kind: Secret
+metadata:
+  name: db-secret
+  namespace: oase
+type: Opaque
+---
+apiVersion: v1
+data:
+  jboss-password: YWRtaW4=
+  jboss-user: YWRtaW4=
+kind: Secret
+metadata:
+  name: jboss-secret
+  namespace: oase
+type: Opaque
+---
+apiVersion: v1
+data:
+  mq-password: cGFzc3dvcmQ=
+  mq-user: YWRtaW4=
+kind: Secret
+metadata:
+  name: mq-secret
+  namespace: oase
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: business-central
+  name: business-central
+  namespace: oase
+spec:
+  ports:
+    - name: service
+      nodePort: 30003
+      port: 8080
+      targetPort: 8080
+  selector:
+    name: business-central
+  sessionAffinity: ClientIP
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: kie-server
+  name: kie-server
+  namespace: oase
+spec:
+  ports:
+    - name: service
+      port: 8080
+      targetPort: 8080
+  selector:
+    name: kie-server
+  sessionAffinity: ClientIP
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: mariadb
+  name: mariadb
+  namespace: oase
+spec:
+  ports:
+    - name: service
+      port: 3306
+      targetPort: 3306
+  selector:
+    name: mariadb
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: oase-apply
+  name: oase-apply
+  namespace: oase
+spec:
+  ports:
+    - name: service
+      port: 50001
+      targetPort: 50001
+  selector:
+    name: oase-apply
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: oase-web
+  name: oase-web
+  namespace: oase
+spec:
+  ports:
+    - name: service
+      nodePort: 30000
+      port: 80
+      targetPort: 80
+  selector:
+    name: oase-web
+  sessionAffinity: ClientIP
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: rabbitmq
+  name: rabbitmq
+  namespace: oase
+spec:
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: 5672
+    - name: management
+      nodePort: 30002
+      port: 15672
+      targetPort: 15672
+  selector:
+    name: rabbitmq
+  type: NodePort
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    name: business-central-data-pv
+    namespace: oase
+  name: business-central-data-pv
+  namespace: oase
+spec:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 10Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: business-central-data-pvc
+    namespace: oase
+  hostPath:
+    path: /tmp/oase/business-central/data
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    name: logs-pv
+    namespace: oase
+  name: logs-pv
+  namespace: oase
+spec:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 5Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: logs-pvc
+    namespace: oase
+  hostPath:
+    path: /tmp/oase/logs
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    name: mariadb-data-pv
+    namespace: oase
+  name: mariadb-data-pv
+  namespace: oase
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 20Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: mariadb-data-pvc
+    namespace: oase
+  hostPath:
+    path: /tmp/oase/mariadb/data
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    name: rabbitmq-data-pv
+    namespace: oase
+  name: rabbitmq-data-pv
+  namespace: oase
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 10Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: rabbitmq-data-pvc
+    namespace: oase
+  hostPath:
+    path: /tmp/oase/rabbitmq/data
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    name: share-pv
+    namespace: oase
+  name: share-pv
+  namespace: oase
+spec:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 1Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: share-pvc
+    namespace: oase
+  hostPath:
+    path: /tmp/oase/share
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: business-central-data-pvc
+  namespace: oase
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      name: business-central-data-pv
+      namespace: oase
+  volumeMode: Filesystem
+  volumeName: business-central-data-pv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: logs-pvc
+  namespace: oase
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+      name: logs-pv
+      namespace: oase
+  volumeMode: Filesystem
+  volumeName: logs-pv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-data-pvc
+  namespace: oase
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  selector:
+    matchLabels:
+      name: mariadb-data-pv
+      namespace: oase
+  volumeMode: Filesystem
+  volumeName: mariadb-data-pv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rabbitmq-data-pvc
+  namespace: oase
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      name: rabbitmq-data-pv
+      namespace: oase
+  volumeMode: Filesystem
+  volumeName: rabbitmq-data-pv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: share-pvc
+  namespace: oase
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  selector:
+    matchLabels:
+      name: share-pv
+      namespace: oase
+  volumeMode: Filesystem
+  volumeName: share-pv
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: business-central
+  name: business-central
+  namespace: oase
+spec:
+  selector:
+    matchLabels:
+      name: business-central
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: business-central
+    spec:
+      containers:
+        - env:
+            - name: KIE_SERVER_LOCATION
+              value: http://kie-server:8080/kie-server/services/rest/server
+            - name: KIE_SERVER_CONTROLLER
+              value: http://business-central:8080/business-central/rest/controller
+            - name: KIE_MAVEN_REPO
+              value: http://business-central:8080/business-central/maven2
+            - name: JAVA_OPTS
+              value:
+                -Xms256m -Xmx2048m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=512m
+                -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8
+          image: exastro/business-central:latest
+          imagePullPolicy: IfNotPresent
+          name: business-central
+          ports:
+            - containerPort: 8080
+              name: service
+          resources: {}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          volumeMounts:
+            - mountPath: /opt/jboss/wildfly/bin/.niogit
+              name: business-central-data
+              readOnly: false
+            - mountPath: /opt/jboss/.m2/repository/com/oase
+              name: share
+              readOnly: false
+              subPath: m2-repository
+      hostname: business-central
+      volumes:
+        - name: business-central-data
+          persistentVolumeClaim:
+            claimName: business-central-data-pvc
+        - name: share
+          persistentVolumeClaim:
+            claimName: share-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: kie-server
+  name: kie-server
+  namespace: oase
+spec:
+  selector:
+    matchLabels:
+      name: kie-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: kie-server
+    spec:
+      containers:
+        - env:
+            - name: KIE_SERVER_LOCATION
+              value: http://kie-server:8080/kie-server/services/rest/server
+            - name: KIE_SERVER_CONTROLLER
+              value: http://business-central:8080/business-central/rest/controller
+            - name: KIE_MAVEN_REPO
+              value: http://business-central:8080/business-central/maven2
+            - name: JAVA_OPTS
+              value: -Xms256m -Xmx2048m -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8
+          image: exastro/kie-server:latest
+          imagePullPolicy: IfNotPresent
+          name: kie-server
+          ports:
+            - containerPort: 8080
+              name: service
+          resources: {}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          volumeMounts:
+            - mountPath: /opt/jboss/.m2/repository/com/oase
+              name: share
+              readOnly: false
+              subPath: m2-repository
+      hostname: kie-server
+      volumes:
+        - name: share
+          persistentVolumeClaim:
+            claimName: share-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: mariadb
+  name: mariadb
+  namespace: oase
+spec:
+  selector:
+    matchLabels:
+      name: mariadb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: mariadb
+    spec:
+      containers:
+        - env:
+            - name: TZ
+              value: Asia/Tokyo
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-root-password
+                  name: db-secret
+            - name: MARIADB_ROOT_HOST
+              value: "%"
+            - name: MARIADB_DATABASE
+              value: OASE_DB
+            - name: MARIADB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: db-user
+                  name: db-secret
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-password
+                  name: db-secret
+          image: mariadb:10.6.4
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            exec:
+              command:
+                - bash
+                - -c
+                - mysqladmin -u root -p$MARIADB_ROOT_PASSWORD ping
+            failureThreshold: 3
+            periodSeconds: 10
+            timeoutSeconds: 3
+          name: mariadb
+          ports:
+            - containerPort: 3306
+              name: mariadb
+          resources: {}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          startupProbe:
+            exec:
+              command:
+                - bash
+                - -c
+                - mysql -u root -p$MARIADB_ROOT_PASSWORD -e 'SELECT 1'
+            failureThreshold: 30
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mariadb-data
+              readOnly: false
+      hostname: mariadb
+      volumes:
+        - name: mariadb-data
+          persistentVolumeClaim:
+            claimName: mariadb-data-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: oase-accept
+  name: oase-accept
+  namespace: oase
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: oase-accept
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: oase-accept
+    spec:
+      containers:
+        - env:
+            - name: DB_HOST
+              value: mariadb
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: OASE_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: db-user
+                  name: db-secret
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-password
+                  name: db-secret
+          image: exastro/oase-accept:latest
+          imagePullPolicy: IfNotPresent
+          name: oase-accept
+          resources: {}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          volumeMounts:
+            - mountPath: /exastro/OASE/oase-root/logs/backyardlogs/oase_accept
+              name: logs
+              readOnly: false
+              subPath: oase_accept
+      hostname: oase-accept
+      volumes:
+        - name: logs
+          persistentVolumeClaim:
+            claimName: logs-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: oase-action
+  name: oase-action
+  namespace: oase
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: oase-action
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: oase-action
+    spec:
+      containers:
+        - env:
+            - name: DB_HOST
+              value: mariadb
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: OASE_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: db-user
+                  name: db-secret
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-password
+                  name: db-secret
+          image: exastro/oase-action:latest
+          imagePullPolicy: IfNotPresent
+          name: oase-action
+          resources: {}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          volumeMounts:
+            - mountPath: /exastro/OASE/oase-root/logs/backyardlogs/oase_action
+              name: logs
+              readOnly: false
+              subPath: oase_action
+      hostname: oase-action
+      volumes:
+        - name: logs
+          persistentVolumeClaim:
+            claimName: logs-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: oase-agent
+  name: oase-agent
+  namespace: oase
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: oase-agent
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: oase-agent
+    spec:
+      containers:
+        - env:
+            - name: DB_HOST
+              value: mariadb
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: OASE_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: db-user
+                  name: db-secret
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-password
+                  name: db-secret
+          image: exastro/oase-agent:latest
+          imagePullPolicy: IfNotPresent
+          name: oase-agent
+          resources: {}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          volumeMounts:
+            - mountPath: /exastro/OASE/oase-root/logs/backyardlogs/oase_agent
+              name: logs
+              readOnly: false
+              subPath: oase_agent
+      hostname: oase-agent
+      volumes:
+        - name: logs
+          persistentVolumeClaim:
+            claimName: logs-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: oase-apply
+  name: oase-apply
+  namespace: oase
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: oase-apply
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: oase-apply
+    spec:
+      containers:
+        - env:
+            - name: DB_HOST
+              value: mariadb
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: OASE_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: db-user
+                  name: db-secret
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-password
+                  name: db-secret
+          image: exastro/oase-apply:latest
+          imagePullPolicy: IfNotPresent
+          name: oase-apply
+          ports:
+            - containerPort: 50001
+              name: service
+          resources: {}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          volumeMounts:
+            - mountPath: /home/oase/.m2/repository/com/oase
+              name: share
+              readOnly: false
+              subPath: m2-repository
+            - mountPath: /exastro/OASE/oase-root/temp
+              name: share
+              readOnly: false
+              subPath: temp
+            - mountPath: /exastro/rule
+              name: share
+              readOnly: false
+              subPath: rule
+            - mountPath: /exastro/OASE/oase-root/logs/backyardlogs/oase_apply
+              name: logs
+              readOnly: false
+              subPath: oase_apply
+      hostname: oase-apply
+      volumes:
+        - name: share
+          persistentVolumeClaim:
+            claimName: share-pvc
+        - name: logs
+          persistentVolumeClaim:
+            claimName: logs-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: oase-ita-collaboration
+  name: oase-ita-collaboration
+  namespace: oase
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: oase-ita-collaboration
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: oase-ita-collaboration
+    spec:
+      containers:
+        - env:
+            - name: DB_HOST
+              value: mariadb
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: OASE_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: db-user
+                  name: db-secret
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-password
+                  name: db-secret
+          image: exastro/oase-ita-collaboration:latest
+          imagePullPolicy: IfNotPresent
+          name: oase-ita-collaboration
+          resources: {}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          volumeMounts:
+            - mountPath: /exastro/OASE/oase-root/logs/backyardlogs/exastro_collaboration
+              name: logs
+              readOnly: false
+              subPath: exastro_collaboration
+      hostname: oase-ita-collaboration
+      volumes:
+        - name: logs
+          persistentVolumeClaim:
+            claimName: logs-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: oase-web
+  name: oase-web
+  namespace: oase
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: oase-web
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: oase-web
+    spec:
+      containers:
+        - env:
+            - name: DB_HOST
+              value: mariadb
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: OASE_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: db-user
+                  name: db-secret
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-password
+                  name: db-secret
+          image: exastro/oase-web:latest
+          imagePullPolicy: IfNotPresent
+          name: oase-web
+          ports:
+            - containerPort: 80
+              name: service
+          resources: {}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          volumeMounts:
+            - mountPath: /exastro/OASE/oase-root/logs/webaplogs
+              name: logs
+              readOnly: false
+              subPath: webaplogs
+      hostname: oase-web
+      volumes:
+        - name: logs
+          persistentVolumeClaim:
+            claimName: logs-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: oase-zabbix-monitoring
+  name: oase-zabbix-monitoring
+  namespace: oase
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: oase-zabbix-monitoring
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: oase-zabbix-monitoring
+    spec:
+      containers:
+        - env:
+            - name: DB_HOST
+              value: mariadb
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: OASE_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: db-user
+                  name: db-secret
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-password
+                  name: db-secret
+          image: exastro/oase-zabbix-monitoring:latest
+          imagePullPolicy: IfNotPresent
+          name: oase-zabbix-monitoring
+          resources: {}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          volumeMounts:
+            - mountPath: /exastro/OASE/oase-root/logs/backyardlogs/oase_monitoring
+              name: logs
+              readOnly: false
+              subPath: oase_monitoring
+      hostname: oase-zabbix-monitoring
+      volumes:
+        - name: logs
+          persistentVolumeClaim:
+            claimName: logs-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: rabbitmq
+  name: rabbitmq
+  namespace: oase
+spec:
+  selector:
+    matchLabels:
+      name: rabbitmq
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: rabbitmq
+    spec:
+      containers:
+        - env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  key: mq-user
+                  name: mq-secret
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: mq-password
+                  name: mq-secret
+          image: rabbitmq:3.9.8-management
+          imagePullPolicy: IfNotPresent
+          name: rabbitmq
+          ports:
+            - containerPort: 5672
+              name: amqp
+            - containerPort: 15672
+              name: management
+          resources: {}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          volumeMounts:
+            - mountPath: /var/lib/rabbitmq/mnesia
+              name: rabbitmq-data
+              readOnly: false
+      hostname: rabbitmq
+      volumes:
+        - name: rabbitmq-data
+          persistentVolumeClaim:
+            claimName: rabbitmq-data-pvc
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    name: oase-setup
+  name: oase-setup
+  namespace: oase
+spec:
+  template:
+    spec:
+      containers:
+        - env:
+            - name: DB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-root-password
+                  name: db-secret
+            - name: DB_HOST
+              value: mariadb
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: OASE_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: db-user
+                  name: db-secret
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-password
+                  name: db-secret
+            - name: BUSINESS_CENTRAL_ENDPOINT
+              value: business-central:8080
+            - name: KIE_SERVER_ENDPOINT
+              value: kie-server:8080
+            - name: JBOSS_USER
+              valueFrom:
+                secretKeyRef:
+                  key: jboss-user
+                  name: jboss-secret
+            - name: JBOSS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: jboss-user
+                  name: jboss-secret
+            - name: MQ_HOST
+              value: rabbitmq
+            - name: MQ_USER
+              valueFrom:
+                secretKeyRef:
+                  key: mq-user
+                  name: mq-secret
+            - name: MQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: mq-password
+                  name: mq-secret
+            - name: MAIL_SMTP
+              value: "{}"
+          image: exastro/oase-setup:latest
+          imagePullPolicy: IfNotPresent
+          name: oase-setup
+      hostname: oase-setup
+      initContainers:
+        - command:
+            - bash
+            - -c
+            - until mysqladmin -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ping; do echo
+              waiting for mysql ping response.; sleep 2; done
+          env:
+            - name: DB_HOST
+              value: mariadb
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: OASE_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: db-user
+                  name: db-secret
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-password
+                  name: db-secret
+          image: mariadb:10.6.4
+          name: mariadb-ping
+        - command:
+            - bash
+            - -c
+            - until mysql -h${DB_HOST} -u${DB_USER} -p${DB_PASSWORD} ${DB_DATABASE} -e
+              'SELECT 1'; do echo waiting for mysql service response.; sleep 2; done
+          env:
+            - name: DB_HOST
+              value: mariadb
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: OASE_DB
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: db-user
+                  name: db-secret
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: db-password
+                  name: db-secret
+          image: mariadb:10.6.4
+          name: mariadb-service
+      restartPolicy: Never
