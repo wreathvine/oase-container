@@ -13,6 +13,7 @@ RUN chown -R jboss:jboss $JBOSS_HOME/standalone/configuration/kie-fs-realm-users
 USER jboss
 RUN $JBOSS_HOME/bin/jboss-cli.sh --file=$JBOSS_HOME/bin/jbpm-custom.cli && \
 rm -rf $JBOSS_HOME/standalone/configuration/standalone_xml_history/current
+RUN mkdir -p $JBOSS_HOME/bin/.niogit
 
 WORKDIR $JBOSS_HOME/bin/
 CMD ["./start_business-central-wb.sh"]

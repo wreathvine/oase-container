@@ -16,7 +16,6 @@ ENV OASE_ROOT_DIR=/exastro/OASE/oase-root
 ENV RUN_INTERVAL=0
 ENV PYTHON_MODULE=/usr/local/bin/python3
 ENV LOG_LEVEL=NORMAL
-ENV LOG_DIR=/exastro/OASE/oase-root/logs/backyardlogs/oase_action
 
 # Add OASE user
 RUN useradd oase
@@ -37,4 +36,8 @@ ENV http_proxy=
 ENV https_proxy=
 
 USER oase
+
+# Create mount point
+RUN mkdir /exastro/rule
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
