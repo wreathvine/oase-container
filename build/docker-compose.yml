@@ -105,7 +105,7 @@ services:
       args:
         - OASE_VERSION=${OASE_VERSION:-latest}
     volumes:
-      - ./logs/oase_accept:/exastro/OASE/oase-root/logs/backyardlogs/oase_accept
+      - ./logs/oase_accept:/exastro/OASE/oase-root/logs/backyardlogs/oase_accept/
     networks:
       - private
     depends_on:

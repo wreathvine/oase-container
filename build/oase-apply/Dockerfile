@@ -48,6 +48,9 @@ WORKDIR /exastro/OASE/oase-root
 
 ENV http_proxy=
 ENV https_proxy=
+ENV LOG_DIR=/exastro/OASE/oase-root/logs/backyardlogs/oase_apply
+
+RUN mkdir -p ${LOG_DIR}/debug
 
 USER oase
 EXPOSE 50001

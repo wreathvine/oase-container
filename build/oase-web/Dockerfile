@@ -18,6 +18,7 @@ ENV HTTPD_SHA256=0127f7dc497e9983e9c51474bed75e45607f2f870a7675a86dc90af6d572f5c
 ENV HTTPD_PREFIX=/usr/local/apache2
 ENV HOSTNAME=exastro-oase
 ENV PATH=/usr/local/apache2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV LOG_DIR=/exastro/OASE/oase-root/logs/webaplogs
 
 # Copy OASE artifacts
 COPY --chown=www-data:www-data --from=resource /exastro /exastro
@@ -46,6 +47,8 @@ RUN chmod a+x /docker-entrypoint.sh
 
 ENV http_proxy=
 ENV https_proxy=
+
+RUN mkdir -p ${LOG_DIR}/debug
 
 WORKDIR /exastro/OASE/oase-root
 
