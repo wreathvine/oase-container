@@ -22,7 +22,7 @@ if [ ! -e /exastro/OASE/oase-root/SETUP_DONE ]; then
     python3 manage.py create_initial_record 52 ${MQ_HOST:-rabbitmq} 0
     python3 manage.py create_initial_record 50 ${MQ_USER:-admin} 0
     python3 manage.py create_initial_record 51 ${MQ_PASSWORD:-Ch@ngeMe} 1
-    python3 manage.py create_initial_record 31 ${MAIL_SMTP:-{}} 0
+    python3 manage.py create_initial_record 31 ${MAIL_SMTP:-"{}"} 0
 
     touch /exastro/OASE/oase-root/SETUP_DONE
 fi

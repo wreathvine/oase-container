@@ -3,6 +3,8 @@ services:
 
   oase-base:
     image: exastro/oase-base:${OASE_VERSION:-latest}
+    profiles:
+      - base
     container_name: oase-base
     hostname: oase-base
     restart: always
@@ -17,6 +19,8 @@ services:
 
   oase-backyard:
     image: exastro/oase-backyard:${OASE_VERSION:-latest}
+    profiles:
+      - backyard
     container_name: oase-backyard
     hostname: oase-backyard
     restart: always
@@ -31,6 +35,9 @@ services:
 
   oase-setup:
     image: exastro/oase-setup:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
     container_name: oase-setup
     hostname: oase-setup
     restart: on-failure:3
@@ -49,6 +56,9 @@ services:
 
   oase-web:
     image: exastro/oase-web:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
     container_name: oase-web
     hostname: oase-web
     restart: always
@@ -73,6 +83,9 @@ services:
 
   oase-apply:
     image: exastro/oase-apply:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
     container_name: oase-apply
     hostname: oase-apply
     restart: always
@@ -95,6 +108,9 @@ services:
 
   oase-accept:
     image: exastro/oase-accept:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
     container_name: oase-accept
     hostname: oase-accept
     restart: always
@@ -105,7 +121,7 @@ services:
       args:
         - OASE_VERSION=${OASE_VERSION:-latest}
     volumes:
-      - ./logs/oase_accept:/exastro/OASE/oase-root/logs/backyardlogs/oase_accept/
+      - ./logs/oase_accept:/exastro/OASE/oase-root/logs/backyardlogs/oase_accept
     networks:
       - private
     depends_on:
@@ -114,6 +130,9 @@ services:
 
   oase-agent:
     image: exastro/oase-agent:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
     container_name: oase-agent
     hostname: oase-agent
     restart: always
@@ -130,6 +149,9 @@ services:
 
   oase-action:
     image: exastro/oase-action:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
     container_name: oase-action
     hostname: oase-action
     restart: always
@@ -146,6 +168,9 @@ services:
 
   oase-ita-collaboration:
     image: exastro/oase-ita-collaboration:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
     container_name: oase-ita-collaboration
     hostname: oase-ita-collaboration
     restart: always
@@ -178,6 +203,9 @@ services:
 
   oase-zabbix-monitoring:
     image: exastro/oase-zabbix-monitoring:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
     container_name: oase-zabbix-monitoring
     hostname: oase-zabbix-monitoring
     restart: always
@@ -240,6 +268,9 @@ services:
 
   business-central:
     image: exastro/business-central:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
     container_name: business-central
     hostname: business-central
     restart: always
@@ -258,6 +289,9 @@ services:
 
   kie-server:
     image: exastro/kie-server:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
     container_name: kie-server
     hostname: kie-server
     restart: always
