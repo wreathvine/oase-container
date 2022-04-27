@@ -65,7 +65,7 @@ services:
       DB_USER: ${DB_USER:-OASE_USER}
       DB_PASSWORD: ${DB_PASSWORD:-Ch@ngeMe}
     volumes:
-     # - ./logs/oase_apply:/exastro/OASE/oase-root/logs/backyardlogs/oase_apply
+      - ./logs/oase_apply:/exastro/OASE/oase-root/logs/backyardlogs/oase_apply
       - common-rule:/exastro/rule
       - common-temp:/exastro/OASE/oase-root/temp
       - common-m2-repository:/home/oase/.m2/repository/com/oase
