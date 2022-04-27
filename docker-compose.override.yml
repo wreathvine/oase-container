@@ -1,0 +1,13 @@
+version: "3.5"
+services:
+  oase-web:
+    networks:
+      - oase-monitoring
+
+  oase-zabbix-monitoring:
+    networks:
+      - oase-monitoring
+
+networks:
+  oase-monitoring:
+    external: true
