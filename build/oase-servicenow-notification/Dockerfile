@@ -2,6 +2,7 @@ ARG OASE_VERSION
 
 FROM exastro/oase-backyard:${OASE_VERSION}
 
+ENV RUN_INTERVAL=10
 ENV LOG_DIR=/exastro/OASE/oase-root/logs/backyardlogs/servicenow_notification
 
 RUN mkdir -p ${LOG_DIR}/debug
