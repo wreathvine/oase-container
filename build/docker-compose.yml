@@ -187,6 +187,9 @@ services:
 
   oase-servicenow-notification:
     image: exastro/oase-servicenow-notification:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
     container_name: oase-servicenow-notification
     hostname: oase-servicenow-notification
     restart: always
