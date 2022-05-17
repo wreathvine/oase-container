@@ -218,10 +218,10 @@ services:
     networks:
       - private
 
-  it-automation:
+  exastro-it-automation:
     image: exastro/it-automation:1.9.0-ja
-    container_name: it-automation
-    hostname: it-automation
+    container_name: exastro-it-automation
+    hostname: exastro-it-automation
     restart: always
     tty: true
     privileged: true
