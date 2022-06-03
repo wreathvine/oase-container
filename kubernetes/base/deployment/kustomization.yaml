@@ -6,6 +6,8 @@ resources:
   - oase-ita-collaboration.yaml
   - oase-web.yaml
   - oase-zabbix-monitoring.yaml
+  - oase-prometheus-monitoring.yaml
+  - oase-grafana-monitoring.yaml
   - business-central.yaml
   - kie-server.yaml
   - mariadb.yaml
