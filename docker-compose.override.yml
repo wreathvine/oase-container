@@ -4,10 +4,6 @@ services:
     networks:
       - oase-monitoring
 
-  oase-zabbix-monitoring:
-    networks:
-      - oase-monitoring
-
 networks:
   oase-monitoring:
     external: true

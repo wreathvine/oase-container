@@ -2,7 +2,7 @@
 .env
 .talismanrc
 */volume/*
-*/logs/*
 *.bk
 *.bak
 *.log
+logs/*

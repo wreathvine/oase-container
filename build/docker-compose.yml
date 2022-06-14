@@ -187,6 +187,9 @@ services:
 
   oase-servicenow-notification:
     image: exastro/oase-servicenow-notification:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
     container_name: oase-servicenow-notification
     hostname: oase-servicenow-notification
     restart: always
@@ -212,6 +215,44 @@ services:
     tty: true
     build:
       context: ./oase-zabbix-monitoring
+      dockerfile: ./Dockerfile
+      args:
+        - OASE_VERSION=${OASE_VERSION:-latest}
+    volumes:
+      - ./logs/oase_monitoring:/exastro/OASE/oase-root/logs/backyardlogs/oase_monitoring
+    networks:
+      - private
+
+  oase-prometheus-monitoring:
+    image: exastro/oase-prometheus-monitoring:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
+    container_name: oase-prometheus-monitoring
+    hostname: oase-prometheus-monitoring
+    restart: always
+    tty: true
+    build:
+      context: ./oase-prometheus-monitoring
+      dockerfile: ./Dockerfile
+      args:
+        - OASE_VERSION=${OASE_VERSION:-latest}
+    volumes:
+      - ./logs/oase_monitoring:/exastro/OASE/oase-root/logs/backyardlogs/oase_monitoring
+    networks:
+      - private
+
+  oase-grafana-monitoring:
+    image: exastro/oase-grafana-monitoring:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
+    container_name: oase-grafana-monitoring
+    hostname: oase-grafana-monitoring
+    restart: always
+    tty: true
+    build:
+      context: ./oase-grafana-monitoring
       dockerfile: ./Dockerfile
       args:
         - OASE_VERSION=${OASE_VERSION:-latest}
@@ -320,4 +361,3 @@ networks:
     driver: bridge
   private:
     driver: bridge
-

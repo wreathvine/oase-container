@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: oase
+  name: oase-grafana-monitoring
+  labels:
+    name: oase-grafana-monitoring
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      name: oase-grafana-monitoring
+  template:
+    metadata:
+      labels:
+        name: oase-grafana-monitoring
+    spec:
+      hostname: oase-grafana-monitoring
+      containers:
+        - name: oase-grafana-monitoring
+          image: exastro/oase-grafana-monitoring:latest
+          imagePullPolicy: IfNotPresent
+          resources: {}
+          env:
+            - name: DB_HOST
+              value: "mariadb"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: "OASE_DB"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: db-password
+          volumeMounts:
+            - name: logs
+              mountPath: "/exastro/OASE/oase-root/logs/backyardlogs/oase_monitoring"
+              subPath: oase_monitoring
+              readOnly: false
+          securityContext:
+            capabilities: {}
+            privileged: false
+      volumes:
+        - name: logs
+          persistentVolumeClaim:
+            claimName: logs-pvc

@@ -57,3 +57,20 @@ patchesJSON6902:
       - op: replace
         path: /spec/template/spec/containers/0/imagePullPolicy
         value: Always
+  - target:
+      version: v1
+      kind: Deployment
+      name: oase-prometheus-monitoring
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always
+  - target:
+      version: v1
+      kind: Deployment
+      name: oase-grafana-monitoring
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always
+
