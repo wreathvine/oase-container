@@ -1,16 +1,17 @@
-#   Copyright 2019 NEC Corporation
+# Copyright 2019 NEC Corporation
 #
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
-#       http://www.apache.org/licenses/LICENSE-2.0
-#
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
 
 apiVersion: v1
 kind: Namespace
@@ -786,6 +787,61 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    name: oase-datadog-monitoring
+  name: oase-datadog-monitoring
+  namespace: oase
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: oase-datadog-monitoring
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: oase-datadog-monitoring
+    spec:
+      containers:
+      - env:
+        - name: DB_HOST
+          value: mariadb
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_DATABASE
+          value: OASE_DB
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              key: db-user
+              name: db-secret
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: db-password
+              name: db-secret
+        image: exastro/oase-datadog-monitoring:latest
+        imagePullPolicy: IfNotPresent
+        name: oase-datadog-monitoring
+        resources: {}
+        securityContext:
+          capabilities: {}
+          privileged: false
+        volumeMounts:
+        - mountPath: /exastro/OASE/oase-root/logs/backyardlogs/oase_monitoring
+          name: logs
+          readOnly: false
+          subPath: oase_monitoring
+      hostname: oase-datadog-monitoring
+      volumes:
+      - name: logs
+        persistentVolumeClaim:
+          claimName: logs-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
     name: oase-grafana-monitoring
   name: oase-grafana-monitoring
   namespace: oase
@@ -887,6 +943,61 @@ spec:
           readOnly: false
           subPath: exastro_collaboration
       hostname: oase-ita-collaboration
+      volumes:
+      - name: logs
+        persistentVolumeClaim:
+          claimName: logs-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: oase-mail-monitoring
+  name: oase-mail-monitoring
+  namespace: oase
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: oase-mail-monitoring
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: oase-mail-monitoring
+    spec:
+      containers:
+      - env:
+        - name: DB_HOST
+          value: mariadb
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_DATABASE
+          value: OASE_DB
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              key: db-user
+              name: db-secret
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: db-password
+              name: db-secret
+        image: exastro/oase-mail-monitoring:latest
+        imagePullPolicy: IfNotPresent
+        name: oase-mail-monitoring
+        resources: {}
+        securityContext:
+          capabilities: {}
+          privileged: false
+        volumeMounts:
+        - mountPath: /exastro/OASE/oase-root/logs/backyardlogs/oase_monitoring
+          name: logs
+          readOnly: false
+          subPath: oase_monitoring
+      hostname: oase-mail-monitoring
       volumes:
       - name: logs
         persistentVolumeClaim:

@@ -1,0 +1,27 @@
+version: "3.5"
+services:
+  oase-web:
+    networks:
+      - oase-monitoring
+
+  oase-mail-monitoring:
+    image: exastro/oase-mail-monitoring:${OASE_VERSION:-latest}
+    container_name: oase-mail-monitoring
+    hostname: oase-mail-monitoring
+    restart: always
+    environment:
+      DB_HOST: ${DB_HOST:-mariadb}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_DATABASE: ${DB_DATABASE:-OASE_DB}
+      DB_USER: ${DB_USER:-OASE_USER}
+      DB_PASSWORD: ${DB_PASSWORD:-Ch@ngeMe}
+      INTERVAL_TIME_MAIL_MON: ${INTERVAL_TIME_MAIL_MON:-10}
+    volumes:
+      - ./logs/oase_monitoring:/exastro/OASE/oase-root/logs/backyardlogs/oase_monitoring
+    networks:
+      - private
+      - oase-monitoring
+
+networks:
+  oase-monitoring:
+    external: true

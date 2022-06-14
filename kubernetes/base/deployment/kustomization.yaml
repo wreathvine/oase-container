@@ -8,6 +8,8 @@ resources:
   - oase-zabbix-monitoring.yaml
   - oase-prometheus-monitoring.yaml
   - oase-grafana-monitoring.yaml
+  - oase-datadog-monitoring.yaml
+  - oase-mail-monitoring.yaml
   - business-central.yaml
   - kie-server.yaml
   - mariadb.yaml
