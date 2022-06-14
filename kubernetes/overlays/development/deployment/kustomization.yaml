@@ -73,4 +73,19 @@ patchesJSON6902:
       - op: replace
         path: /spec/template/spec/containers/0/imagePullPolicy
         value: Always
-
+  - target:
+      version: v1
+      kind: Deployment
+      name: oase-datadog-monitoring
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always
+  - target:
+      version: v1
+      kind: Deployment
+      name: oase-mail-monitoring
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always

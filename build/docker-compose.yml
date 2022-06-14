@@ -261,6 +261,44 @@ services:
     networks:
       - private
 
+  oase-datadog-monitoring:
+    image: exastro/oase-datadog-monitoring:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
+    container_name: oase-datadog-monitoring
+    hostname: oase-datadog-monitoring
+    restart: always
+    tty: true
+    build:
+      context: ./oase-datadog-monitoring
+      dockerfile: ./Dockerfile
+      args:
+        - OASE_VERSION=${OASE_VERSION:-latest}
+    volumes:
+      - ./logs/oase_monitoring:/exastro/OASE/oase-root/logs/backyardlogs/oase_monitoring
+    networks:
+      - private
+
+  oase-mail-monitoring:
+    image: exastro/oase-mail-monitoring:${OASE_VERSION:-latest}
+    profiles:
+      - build
+      - push
+    container_name: oase-mail-monitoring
+    hostname: oase-mail-monitoring
+    restart: always
+    tty: true
+    build:
+      context: ./oase-mail-monitoring
+      dockerfile: ./Dockerfile
+      args:
+        - OASE_VERSION=${OASE_VERSION:-latest}
+    volumes:
+      - ./logs/oase_monitoring:/exastro/OASE/oase-root/logs/backyardlogs/oase_monitoring
+    networks:
+      - private
+
   rabbitmq:
     image: rabbitmq:3.9.8-management
     container_name: rabbitmq
