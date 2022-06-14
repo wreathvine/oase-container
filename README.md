@@ -32,30 +32,35 @@ docker-compose -f docker-compose.yml -f docker-compose.override.yml -f docker-co
 
 ## Kubernetesを利用する場合
 
-### Worker nodeでの作業
+### コンテナ起動(簡易版)
 
 ```bash
-# 永続化に必要なディレクトリを作成する
+
+# Worker Nodeでボリュームを作成
 mkdir -p /tmp/oase/{business-central/data,logs,mariadb/data,rabbitmq/data,share}
-
-# 作成したディレクトリの権限を変更する
 chmod -R 777 /tmp/oase
-```
 
-### master nodeでの作業
-
-```bash
 # GitHub から資材を取得
 git clone https://github.com/exastro-suite/oase-container.git
 
-# Kustomize を使ってマニフェストファイルを生成
-cd oase-container
-kubectl kustomize kubernetes/base > kubernetes.yaml
+# Exastro OASEをデプロイ
+kubectl apply -f https://raw.githubusercontent.com/exastro-suite/oase-container/main/kubernetes.yaml
+
 ```
-### デプロイ
+
+### コンテナ起動(カスタム版)
 
 ```bash
-# 次のコマンドを実行
-kubectl apply -f kubernetes.yaml
+
+# GitHub から資材を取得
+git clone https://github.com/exastro-suite/oase-container.git
+
+# 環境に合わせてマニフェストファイルを修正する。
+# oase-container/kubernetes/overlays 配下に kustomization.yaml を配置する。
+
+# Kustomize を使ってマニフェストファイルを適用
+cd oase-container
+kubectl apply -k kubernetes/overlays
+
 ```
 
