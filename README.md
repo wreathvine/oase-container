@@ -1,6 +1,19 @@
-# oase-container
+# Exastro OASE Container
 
-## OASE起動方法
+## OASEのみ利用したい場合
+```bash
+# GitHubから資材を取得
+git clone https://github.com/exastro-suite/oase-container.git
+
+# logsディレクトリの権限を変更する
+cd oase-container
+chmod 777 -R logs/
+
+# 次のコマンドで起動
+docker-compose -f docker-compose.yml up -d
+```
+
+## OASEと監視アダプタを利用する場合
 
 ```bash
 # GitHubから資材を取得
@@ -9,10 +22,40 @@ git clone https://github.com/exastro-suite/oase-container.git
 # networkを一つ作成
 docker network create oase-monitoring
 
-# 次のコマンドで起動
+# logsディレクトリの権限を変更する
 cd oase-container
-docker-compose up -d
+chmod 777 -R logs/
 
-# 監視アダプタを利用する場合
-docker-compose -f docker-compose.yml -f docker-compose.zabbix.yml up -d
+# 次のコマンドでOASEと監視アダプタを起動(ZABBIXを利用する場合)
+docker-compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.zabbix.yml up -d
 ```
+
+## Kubernetesを利用する場合
+
+### Worker nodeでの作業
+
+```bash
+# 永続化に必要なディレクトリを作成する
+mkdir -p /tmp/oase/{business-central/data,logs,mariadb/data,rabbitmq/data,share}
+
+# 作成したディレクトリの権限を変更する
+chmod -R 777 /tmp/oase
+```
+
+### master nodeでの作業
+
+```bash
+# GitHub から資材を取得
+git clone https://github.com/exastro-suite/oase-container.git
+
+# Kustomize を使ってマニフェストファイルを生成
+cd oase-container
+kubectl kustomize kubernetes/base > kubernetes.yaml
+```
+### デプロイ
+
+```bash
+# 次のコマンドを実行
+kubectl apply -f kubernetes.yaml
+```
+
