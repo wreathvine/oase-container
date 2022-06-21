@@ -27,8 +27,6 @@ services:
     depends_on:
       - mariadb
 
-
-
   oase-web:
     image: exastro/oase-web:${OASE_VERSION:-latest}
     container_name: oase-web
@@ -48,6 +46,7 @@ services:
     networks:
       - public
       - private
+      - oase-monitoring
     depends_on:
       oase-setup:
         condition: service_completed_successfully
@@ -201,18 +200,6 @@ services:
     networks:
       - private
 
-  exastro-it-automation:
-    image: exastro/it-automation:1.9.0-ja
-    container_name: exastro-it-automation
-    hostname: exastro-it-automation
-    restart: always
-    tty: true
-    privileged: true
-    ports:
-      - ${ITA_WEB_PORT:-31080}:80
-    networks:
-      - private
-
   business-central:
     image: exastro/business-central:${OASE_VERSION:-latest}
     container_name: business-central
@@ -248,6 +235,125 @@ services:
     networks:
       - private
 
+  oase-zabbix-monitoring:
+    image: exastro/oase-zabbix-monitoring:${OASE_VERSION:-latest}
+    container_name: oase-zabbix-monitoring
+    hostname: oase-zabbix-monitoring
+    restart: always
+    profiles:
+      - all
+      - zabbix
+    environment:
+      DB_HOST: ${DB_HOST:-mariadb}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_DATABASE: ${DB_DATABASE:-OASE_DB}
+      DB_USER: ${DB_USER:-OASE_USER}
+      DB_PASSWORD: ${DB_PASSWORD:-Ch@ngeMe}
+      INTERVAL_TIME_ZBX_MON: ${INTERVAL_TIME_ZBX_MON:-10}
+    volumes:
+      - ./logs/oase_monitoring:/exastro/OASE/oase-root/logs/backyardlogs/oase_monitoring
+    networks:
+      - private
+      - oase-monitoring
+
+  oase-prometheus-monitoring:
+    image: exastro/oase-prometheus-monitoring:${OASE_VERSION:-latest}
+    container_name: oase-prometheus-monitoring
+    hostname: oase-prometheus-monitoring
+    restart: always
+    profiles:
+      - all
+      - prometheus
+    environment:
+      DB_HOST: ${DB_HOST:-mariadb}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_DATABASE: ${DB_DATABASE:-OASE_DB}
+      DB_USER: ${DB_USER:-OASE_USER}
+      DB_PASSWORD: ${DB_PASSWORD:-Ch@ngeMe}
+      INTERVAL_TIME_PRO_MON: ${INTERVAL_TIME_PRO_MON:-10}
+    volumes:
+      - ./logs/oase_monitoring:/exastro/OASE/oase-root/logs/backyardlogs/oase_monitoring
+    networks:
+      - private
+      - oase-monitoring
+  oase-grafana-monitoring:
+    image: exastro/oase-grafana-monitoring:${OASE_VERSION:-latest}
+    container_name: oase-grafana-monitoring
+    hostname: oase-grafana-monitoring
+    restart: always
+    profiles:
+      - all
+      - grafana
+    environment:
+      DB_HOST: ${DB_HOST:-mariadb}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_DATABASE: ${DB_DATABASE:-OASE_DB}
+      DB_USER: ${DB_USER:-OASE_USER}
+      DB_PASSWORD: ${DB_PASSWORD:-Ch@ngeMe}
+      INTERVAL_TIME_GRA_MON: ${INTERVAL_TIME_GRA_MON:-10}
+    volumes:
+      - ./logs/oase_monitoring:/exastro/OASE/oase-root/logs/backyardlogs/oase_monitoring
+    networks:
+      - private
+      - oase-monitoring
+
+  oase-datadog-monitoring:
+    image: exastro/oase-datadog-monitoring:${OASE_VERSION:-latest}
+    container_name: oase-datadog-monitoring
+    hostname: oase-datadog-monitoring
+    restart: always
+    profiles:
+      - all
+      - datadog
+    environment:
+      DB_HOST: ${DB_HOST:-mariadb}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_DATABASE: ${DB_DATABASE:-OASE_DB}
+      DB_USER: ${DB_USER:-OASE_USER}
+      DB_PASSWORD: ${DB_PASSWORD:-Ch@ngeMe}
+      INTERVAL_TIME_DD_MON: ${INTERVAL_TIME_DD_MON:-60}
+    volumes:
+      - ./logs/oase_monitoring:/exastro/OASE/oase-root/logs/backyardlogs/oase_monitoring
+    networks:
+      - private
+      - oase-monitoring
+      
+  oase-mail-monitoring:
+    image: exastro/oase-mail-monitoring:${OASE_VERSION:-latest}
+    container_name: oase-mail-monitoring
+    hostname: oase-mail-monitoring
+    restart: always
+    profiles:
+      - all
+      - mail
+    environment:
+      DB_HOST: ${DB_HOST:-mariadb}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_DATABASE: ${DB_DATABASE:-OASE_DB}
+      DB_USER: ${DB_USER:-OASE_USER}
+      DB_PASSWORD: ${DB_PASSWORD:-Ch@ngeMe}
+      INTERVAL_TIME_MAIL_MON: ${INTERVAL_TIME_MAIL_MON:-10}
+    volumes:
+      - ./logs/oase_monitoring:/exastro/OASE/oase-root/logs/backyardlogs/oase_monitoring
+    networks:
+      - private
+      - oase-monitoring
+
+  exastro-it-automation:
+    image: exastro/it-automation:1.9.0-ja
+    container_name: exastro-it-automation
+    hostname: exastro-it-automation
+    restart: always
+    profiles:
+      - all
+      - ita
+    tty: true
+    privileged: true
+    ports:
+      - ${ITA_WEB_PORT:-31080}:80
+    networks:
+      - private
+
   # oase-test:
   #   image: exastro/oase-test
   #   container_name: oase-test
@@ -270,4 +376,5 @@ networks:
     driver: bridge
   private:
     driver: bridge
-
+  oase-monitoring:
+    external: true
