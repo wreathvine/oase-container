@@ -5,12 +5,16 @@
 # GitHubから資材を取得
 git clone https://github.com/exastro-suite/oase-container.git
 
-# logsディレクトリの権限を変更する
 cd oase-container
+
+# networkを一つ作成
+docker network create oase-monitoring
+
+# logsディレクトリの権限を変更する
 chmod 777 -R logs/
 
-# 次のコマンドで起動
-docker-compose -f docker-compose.yml up -d
+# 例: Exastro OASE コンテナの起動
+docker-compose up -d
 ```
 
 ## OASEと監視アダプタを利用する場合
@@ -19,15 +23,38 @@ docker-compose -f docker-compose.yml up -d
 # GitHubから資材を取得
 git clone https://github.com/exastro-suite/oase-container.git
 
+cd oase-container
+
 # networkを一つ作成
 docker network create oase-monitoring
 
 # logsディレクトリの権限を変更する
-cd oase-container
 chmod 777 -R logs/
 
-# 次のコマンドでOASEと監視アダプタを起動(ZABBIXを利用する場合)
-docker-compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.zabbix.yml up -d
+# 例1: Exastro OASE と Exastro IT Automation コンテナの起動
+docker-compose --profile ita up -d
+
+# 例2: Exastro OASE と Zabbix 連携用コンテナの起動
+docker-compose --profile zabbix up -d
+
+# 例3: Exastro OASE と Prometheus 連携用コンテナの起動
+docker-compose --profile prometheus up -d
+
+# 例4: Exastro OASE と Grafana 連携用コンテナの起動
+docker-compose --profile grafana up -d
+
+# 例5: Exastro OASE と Datadog 連携用コンテナの起動
+docker-compose --profile datadog up -d
+
+# 例6: Exastro OASE とメール連携用コンテナの起動
+docker-compose --profile mail up -d
+
+# 例7: Exastro OASE と Exastro IT Automation コンテナ、及び、監視アプリケーション連携用コンテナの起動
+docker-compose --profile all up -d
+
+# 例8: Exastro OASE と Exastro IT Automation コンテナ、及び、Zabbix 監視アプリケーション連携用コンテナの起動
+docker-compose --profile ita --profile zabbix up -d
+
 ```
 
 ## Kubernetesを利用する場合
